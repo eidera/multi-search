@@ -1,0 +1,28 @@
+.article {
+  padding: 10px;
+  margin: 10px;
+}
+
+.site, .date {
+  font-size: 9pt;
+}
+
+.site {
+  display: inline-block;
+  font-weight: bold;
+}
+
+.date {
+  display: inline;
+  font-weight: bold;
+  color: #888888;
+}
+
+.title {
+  font-size: 18pt;
+}
+
+.contents {
+  font-size: 12pt;
+  color: #888888;
+}
