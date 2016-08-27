@@ -5,13 +5,13 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import play.api.libs.ws._
 
-abstract class Getter(implicit ws: WSClient) {
+abstract class Getter(keyword: String)(implicit ws: WSClient) {
   implicit val context = play.api.libs.concurrent.Execution.Implicits.defaultContext
 
   val TimeOut = 10000 // 10[sec]
   val ContentsLength = 500
 
-  def execute(keyword: String): Option[Seq[Article]]
+  def execute(): Option[Seq[Article]]
 
   def makeArticle(title: String, url: String, contents: Option[String], postedAt: Option[DateTime]): Article = {
     new Article(
@@ -26,7 +26,7 @@ abstract class Getter(implicit ws: WSClient) {
   protected[this] def getTimeout(): Int = { TimeOut }
   protected[this] def getSite(): String
   protected[this] def getUrl(): String
-  protected[this] def getParams(keyword: String): Seq[(String,String)]
+  protected[this] def getParams(): Seq[(String,String)]
 
   protected[this] def getResponse(params: Seq[(String, String)]): WSResponse = {
     val w = ws.url(getUrl()).withQueryString(params:_*).get()

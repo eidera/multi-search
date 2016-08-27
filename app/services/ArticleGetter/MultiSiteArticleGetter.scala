@@ -6,8 +6,8 @@ class MultiSiteArticleGetter(implicit ws: WSClient) {
   def execute(keyword: String): Option[Seq[Article]] = {
     if(keyword.isEmpty) { return None }
 
-    val results = getGetters.map{ getter =>
-      getter.execute(keyword)
+    val results = getGetters(keyword).map{ getter =>
+      getter.execute()
     }.filter(n => n.nonEmpty).map(n => n.get).foldLeft(Seq[Article]())((z, n) => z ++ n)
 
     if(results.nonEmpty) {
@@ -17,11 +17,12 @@ class MultiSiteArticleGetter(implicit ws: WSClient) {
     }
   }
 
-  private[this] def getGetters(): Seq[Getter] = {
+  private[this] def getGetters(keyword: String): Seq[Getter] = {
     Seq(
-      new QiitaGetter,
-      new JpStackOverFlowGetter,
-      new StackOverFlowGetter
+      new QiitaGetter(keyword),
+      new JpStackOverFlowGetter(keyword),
+      new StackOverFlowGetter(keyword),
+      new TeratailGetter(keyword)
     )
   }
 }

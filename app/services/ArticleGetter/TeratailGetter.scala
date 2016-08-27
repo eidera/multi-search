@@ -5,25 +5,26 @@ import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
 import play.api.libs.ws._
 
-class QiitaGetter(keyword: String)(implicit ws: WSClient) extends Getter(keyword) {
-  case class JsonArticle(title: String, body: String, url: String, updated_at: String)
+class TeratailGetter(keyword: String)(implicit ws: WSClient) extends Getter(keyword) {
+  //case class JsonArticle(id: Int, title: String, modified: String)
+  case class JsonArticle(title: String, modified: String)
 
   def execute(): Option[Seq[Article]] = {
     val response = getResponse(getParams())
     analyzeResponse(response.json)
   }
 
-  protected[this] def getSite(): String = "Qiita"
-  protected[this] def getUrl(): String = "https://qiita.com/api/v1/search"
+  protected[this] def getSite(): String = "Teratail"
+  protected[this] def getUrl(): String = {
+    s"https://teratail.com/api/v1/tags/${keyword}/questions"
+  }
   protected[this] def getParams(): Seq[(String, String)] = {
-    Seq(
-      "q" -> keyword
-    )
+    Seq[(String, String)]()
   }
 
   protected[this] def analyzeResponse(response: JsValue): Option[Seq[Article]] = {
     implicit val articleReader = Json.reads[JsonArticle]
-    val results = (response).as[Seq[JsonArticle]]
+    val results = (response \ "questions").as[Seq[JsonArticle]]
     if(results.nonEmpty) { Some(convertJsonArticleToArticle(results)) }
     else { None }
   }
@@ -32,11 +33,16 @@ class QiitaGetter(keyword: String)(implicit ws: WSClient) extends Getter(keyword
     articles.map{ article =>
       makeArticle(
         title = article.title,
-        url = article.url,
-        contents = Some(article.body),
-        postedAt = convertStringToDateTime(article.updated_at)
+        //url = makeUrl(article.id),
+        url = "hoge",
+        contents = None,
+        postedAt = convertStringToDateTime(article.modified)
       )
     }
+  }
+
+  protected[this] def makeUrl(id: Int): String = {
+    s"https://teratail.com/questions/${id.toString}"
   }
 
   protected[this] def convertStringToDateTime(time: String): Option[DateTime] = {
