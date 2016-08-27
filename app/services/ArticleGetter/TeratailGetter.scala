@@ -24,9 +24,16 @@ class TeratailGetter(keyword: String)(implicit ws: WSClient) extends Getter(keyw
 
   protected[this] def analyzeResponse(response: JsValue): Option[Seq[Article]] = {
     implicit val articleReader = Json.reads[JsonArticle]
-    val results = (response \ "questions").as[Seq[JsonArticle]]
-    if(results.nonEmpty) { Some(convertJsonArticleToArticle(results)) }
-    else { None }
+    val target = (response \ "questions")
+    target match {
+      case _: JsDefined => {
+        val results = target.as[Seq[JsonArticle]]
+        if(results.nonEmpty) { Some(convertJsonArticleToArticle(results)) }
+        else { None }
+      }
+      case _: JsUndefined => None
+      case _ => None
+    }
   }
 
   protected[this] def convertJsonArticleToArticle(articles: Seq[JsonArticle]): Seq[Article] = {
