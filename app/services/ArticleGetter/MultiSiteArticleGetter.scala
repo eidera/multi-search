@@ -21,7 +21,8 @@ class MultiSiteArticleGetter(implicit ws: WSClient) {
     Seq(
       new QiitaGetter(keyword),
       new JpStackOverFlowGetter(keyword),
-      new StackOverFlowGetter(keyword)
+      new StackOverFlowGetter(keyword),
+      new TeratailGetter(keyword)
     )
   }
 }
