@@ -6,8 +6,7 @@ import play.api.libs.json._
 import play.api.libs.ws._
 
 class TeratailGetter(keyword: String)(implicit ws: WSClient) extends Getter(keyword) {
-  //case class JsonArticle(id: Int, title: String, modified: String)
-  case class JsonArticle(title: String, modified: String)
+  case class JsonArticle(id: Int, title: String, modified: String)
 
   def execute(): Option[Seq[Article]] = {
     val response = getResponse(getParams())
@@ -40,8 +39,7 @@ class TeratailGetter(keyword: String)(implicit ws: WSClient) extends Getter(keyw
     articles.map{ article =>
       makeArticle(
         title = article.title,
-        //url = makeUrl(article.id),
-        url = "hoge",
+        url = makeUrl(article.id),
         contents = None,
         postedAt = convertStringToDateTime(article.modified)
       )
