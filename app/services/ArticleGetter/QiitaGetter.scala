@@ -5,17 +5,17 @@ import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
 import play.api.libs.ws._
 
-class QiitaGetter(implicit ws: WSClient) extends Getter {
+class QiitaGetter(keyword: String)(implicit ws: WSClient) extends Getter(keyword) {
   case class JsonArticle(title: String, body: String, url: String, updated_at: String)
 
-  def execute(keyword: String): Option[Seq[Article]] = {
-    val response = getResponse(getParams(keyword))
+  def execute(): Option[Seq[Article]] = {
+    val response = getResponse(getParams())
     analyzeResponse(response.json)
   }
 
   protected[this] def getSite(): String = "Qiita"
   protected[this] def getUrl(): String = "https://qiita.com/api/v1/search"
-  protected[this] def getParams(keyword: String): Seq[(String, String)] = {
+  protected[this] def getParams(): Seq[(String, String)] = {
     Seq(
       "q" -> keyword
     )

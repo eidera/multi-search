@@ -4,17 +4,17 @@ import org.joda.time.DateTime
 import play.api.libs.json._
 import play.api.libs.ws._
 
-class StackOverFlowGetter(implicit ws: WSClient) extends Getter {
+class StackOverFlowGetter(keyword: String)(implicit ws: WSClient) extends Getter(keyword) {
   case class JsonArticle(title: String, link: String)
 
-  def execute(keyword: String): Option[Seq[Article]] = {
-    val response = getResponse(getParams(keyword))
+  def execute(): Option[Seq[Article]] = {
+    val response = getResponse(getParams())
     analyzeResponse(response.json)
   }
 
   protected[this] def getSite(): String = "StackOverFlow"
   protected[this] def getUrl(): String = "https://api.stackexchange.com/2.2/questions"
-  protected[this] def getParams(keyword: String): Seq[(String,String)] = {
+  protected[this] def getParams(): Seq[(String,String)] = {
     Seq(
       "order"  -> "desc",
       "sort"   -> "creation",
