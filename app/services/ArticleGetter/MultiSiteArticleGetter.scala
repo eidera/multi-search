@@ -3,10 +3,10 @@ package services.articleGetter
 import play.api.libs.ws._
 
 class MultiSiteArticleGetter(implicit ws: WSClient) {
-  def execute(keyword: String): Option[Seq[Article]] = {
+  def execute(keyword: String, targetedSiteInfos: TargetedSiteInfos): Option[Seq[Article]] = {
     if(keyword.isEmpty) { return None }
 
-    val results = getGetters(keyword).map{ getter =>
+    val results = getGetters(keyword, targetedSiteInfos).map{ getter =>
       getter.execute()
     }.filter(n => n.nonEmpty).map(n => n.get).foldLeft(Seq[Article]())((z, n) => z ++ n)
 
@@ -17,12 +17,14 @@ class MultiSiteArticleGetter(implicit ws: WSClient) {
     }
   }
 
-  private[this] def getGetters(keyword: String): Seq[Getter] = {
-    Seq(
-      new QiitaGetter(keyword),
-      new JpStackOverFlowGetter(keyword),
-      new StackOverFlowGetter(keyword),
-      new TeratailGetter(keyword)
-    )
+  private[this] def getGetters(keyword: String, infos: TargetedSiteInfos): Seq[Getter] = {
+    infos.getTargetSiteNumbers.map { i =>
+      TargetedSiteInfos.SITES(i) match {
+        case "Qiita" => new QiitaGetter(keyword)
+        case "StackoverFlow" => new StackOverFlowGetter(keyword)
+        case "JpStackoverFlow" => new JpStackOverFlowGetter(keyword)
+        case "Teratail" => new TeratailGetter(keyword)
+      }
+    }
   }
 }
