@@ -61,7 +61,7 @@ class HomeController @Inject() (val messagesApi: MessagesApi) (implicit ws: WSCl
   private[this] def getTargetedSiteInfos(searchForm: Option[SearchForm]): TargetedSiteInfos = {
     searchForm match {
       case Some(n) => new TargetedSiteInfos(n.site.map{ i => i.toInt })
-      case None    => new TargetedSiteInfos(Seq[Int]())
+      case None    => new TargetedSiteInfos()
     }
   }
 }

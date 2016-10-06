@@ -6,7 +6,7 @@ class TargetSiteInfo(number: Int, name: String, targeted: Boolean) {
   def getTargeted(): Boolean = targeted
 }
 
-class TargetedSiteInfos(siteNumbers: Seq[Int]) {
+class TargetedSiteInfos(siteNumbers: Seq[Int] = TargetedSiteInfos.AllSiteIndex) {
   private[this] val infos = makeTargetSiteInfos
 
   def getLength(): Int = infos.length
@@ -36,4 +36,5 @@ object TargetedSiteInfos {
     3 -> "JpStackoverFlow",
     4 -> "Teratail"
   )
+  val AllSiteIndex = SITES.toSeq.map{ case(k, v) => k }
 }
